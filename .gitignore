@@ -1,4 +1,6 @@
 *.pyc
 *.swp
+MANIFEST
 build/
 dist/
+deb_dist/
