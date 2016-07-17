@@ -1,27 +1,29 @@
 #!/usr/bin/env python
 
+""" aafm: locate and run installed aafm-gui script """
+
 import itertools
 import os
 import site
 import sys
 
 # Get site package locations
-site_packages = site.getsitepackages()
-if len(site_packages) == 0:
+SITE_PACKAGES = site.getsitepackages()
+if len(SITE_PACKAGES) == 0:
     sys.exit('No site package locations found')
 
 # Look for aafm script in package locations
-possible_scripts = [x + '/aafm/aafm-gui.py' for x in site_packages]
-scripts = [x for x in possible_scripts if os.path.isfile(x)]
-if len(scripts) == 0:
-    sys.exit("Did not find aafm in site package locations: "
-             + ", ".join(site_packages))
-if len(scripts) > 1:
-    print("Located multiple aafm site packages in "
-          + " and ".join(site_packages)
-          + "; using the package in "
-          + site_packages[0])
+POSSIBLE_SCRIPTS = [x + '/aafm/aafm-gui.py' for x in SITE_PACKAGES]
+SCRIPTS = [x for x in POSSIBLE_SCRIPTS if os.path.isfile(x)]
+if len(SCRIPTS) == 0:
+    sys.exit("Did not find aafm in site package locations: " +
+             ", ".join(SITE_PACKAGES))
+if len(SCRIPTS) > 1:
+    print("Located multiple aafm site packages in " +
+          " and ".join(SITE_PACKAGES) +
+          "; using the package in " +
+          SITE_PACKAGES[0])
 
 # Launch aafm from site-packages path and pass any arguments given
-cmd = list(itertools.chain([sys.executable, scripts[0]], sys.argv[1:]))
-os.system(" ".join(cmd))
+CMD = list(itertools.chain([sys.executable, SCRIPTS[0]], sys.argv[1:]))
+os.system(" ".join(CMD))
