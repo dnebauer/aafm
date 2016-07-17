@@ -1,7 +1,5 @@
-aafm
-====
-
-# Android ADB File Manager #
+aafm: Android ADB File Manager
+==============================
 
 A command line + GUI (GTK based) Android ADB-based file manager
 
@@ -11,9 +9,59 @@ Recent Android releases (Honeycomb / 3.0+) replace the older USB mount protocol 
 
 So I decided to go ahead and build a little utility that would if not fix, at least alleviate the pain of using Honeycomb devices. **aafm** uses ADB (one of the command line tools provided with the official Android SDK) for communicating with the Android device. This is the same method that IDEs implement.
 
-## Installing ##
+Installing
+----------
 
-### Requirements ###
+### Clone repository
+
+Clone this repository to a place you fancy:
+
+```
+git clone git://github.com/sole/aafm.git ~/install/directory
+```
+
+### Install from `setup.py` script
+
+In the repository directory build the install files:
+
+```
+python setup.py build
+```
+
+To install the built files (requires root access):
+
+```
+python setup.py install
+```
+
+### Build and install debian package
+
+Debian users can build and install a debian package. To do this the `py2dsc-deb` tools is required -- it is available from the `stdeb` python package, which can be installed with:
+
+```
+pip install stdeb
+```
+
+To build the deb package first build a source distribution:
+
+```
+python setup.py sdist
+```
+
+This creates a source distribution file in a `dist` subdirectory, creating the subdirectory if necessary. On a linux system the source distribution file may be named something like `aafm-0.4.tar.gz`.
+
+Then build the deb package:
+
+```
+py2dsc-deb dist/aafm-0.4.tar.gz
+```
+
+This will create a deb file and associated build files in a `deb_dist` subdirectory, creating the subdirectory if necessary.
+
+The deb file can be installed using your favourite tool, e.g., `dpkg` or `gdebi`. Root privileges are required for this step.
+
+Requirements
+------------
 
 Python with PyGTK bindings, GTK, git, and the Android SDK.
 
@@ -23,13 +71,7 @@ It can be downloaded from http://afb.users.sourceforge.net/zero-install/PyGTK.pk
 
 One note though: there are a few hiccups with the Mac version, but they are mostly cosmetic and won't prevent you from enjoying the software. Feel free to help correcting them if you have the know-how!
 
-### Clone repository ###
-
-Clone this repository to a place you fancy. For example, your Applications folder.
-
-```git clone git://github.com/sole/aafm.git ~/Applications/aafm```
-
-### Install the Android SDK ###
+### Install the Android SDK
 
 If it's not installed yet, download the SDK from its page and follow its instructions: http://developer.android.com/sdk/index.html
 
@@ -47,11 +89,11 @@ For more information on ADB and a list of its features, read over here: http://d
 
 Also, I haven't tried it myself, but it seems that it's possible to download and build a reduced subset of the Android SDK only, including ADB and a few more tools. This doesn't require Java installed in the system. This page describes how: http://lackingrhoticity.blogspot.com/2010/02/how-to-build-adb-android-debugger.html
 
-### Close terminal and open it again ###
+### Close terminal and open it again
 
 So the changes to the PATH get current. In Mac OS you might need to log in and out too.
 
-### Configure udev rules (if in Linux) ###
+### Configure udev rules (if in Linux)
 
 You need to let the system know that when you connect your USB device (i.e. the tablet) it should allow you, as a non-root user, to access it. If you don't do that, you'll get a "Insufficient permissions for device" error.
 
@@ -65,14 +107,14 @@ For example, in Ubuntu 10.10 you would add a file in ```/etc/udev/rules.d/51-and
 You can find out the "idVendor" value by running lsusb in a terminal. That will output a list of the currently connected USB devices, such as for example this:
 
 ```
-Bus 004 Device 006: ID 05ac:8218 Apple, Inc. 
+Bus 004 Device 006: ID 05ac:8218 Apple, Inc.
 Bus 004 Device 003: ID 0a5c:4500 Broadcom Corp. BCM2046B1 USB 2.0 Hub (part of BCM2046 Bluetooth)
 Bus 004 Device 002: ID 05ac:0237 Apple, Inc. Internal Keyboard/Trackpad (ISO)
 Bus 004 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
 Bus 003 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
 Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 Bus 001 Device 004: ID 18d1:4e12 Google Inc. Nexus One Phone (Debug)
-Bus 001 Device 002: ID 05ac:8507 Apple, Inc. 
+Bus 001 Device 002: ID 05ac:8507 Apple, Inc.
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 ```
 
@@ -88,7 +130,7 @@ Save it, and then change the file permissions:
 
 To make sure it worked, connect the device and try to run ```adb devices``` in a terminal. If it's working properly, you should see a list more or less like this:
 
-    List of devices attached 
+    List of devices attached
     4342354131444B534652	device
 
 The numbers aren't important, the important bit is that you see ```device``` instead of ```??????```.
@@ -102,48 +144,34 @@ If everything else fails, try to log in and out again, or maybe even restart the
 More information on udev rules and Android can be found on the official Android development guide: http://developer.android.com/guide/developing/device.html
 
 
-### Enable Debug mode in the device ###
+Using it
+--------
+
+### Enable Debug mode in the connected android devices
 
 Go to _Settings → Applications → Development_ and make sure the USB debugging checkbox is ticked. You might get a scary warning saying debugging allows you to do nasty things--just ignore it.
 
-### Execute aafm ###
-
-To execute it, cd to the place where it's been cloned:
-
-    cd ~/Applications/aafm/src/
-
-And simply execute it:
-
-    ./aafm-gui.py
-
-If for some odd reason it has lost the executable permission, you can add it:
-
-    chmod +x ./aafm-gui.py
-
-Or simply execute it using Python:
-
-    python ./aafm-gui.py
-
-Once you're satisfied it's working, you can also make a launcher or add it to your Gnome menu, of course!
-
-## Using it ##
+### The aafm interface
 
 If everything works (and why shouldn't it?) you should get a window divided in two panels. The left side represents your host computer, and initially should show the files of the aafm directory, since you launched it from there. The right side represents your Android device's files --so it needs to be connected to the computer, and _USB debugging_ must be enabled in the device.
+
 You can navigate just as you would do with your favourite file explorer. Files can be dragged from one to another panel, directories created, and files renamed (hint: right click and explore the options the contextual menu offers you!). You can also drag from Nautilus (in GNOME) into the device panel, to copy files to the device, or drag _to_ Nautilus, for copying files from the device.
 
 Be warned that currently the progress reporting is a bit hackish and with large files it will appear as if the window has got frozen. It hasn't--it's just waiting for the ADB transfer to finish. In the future this should be fixed, but I haven't come up with the best solution yet.
 
 
-## License ##
+License
+-------
 
 Copyright (C) 2011-2012 Soledad Penades (http://soledadpenades.com).
 
-This software is licensed under a GPL V3 license. Please read the accompanying LICENSE.txt file for more details, but basically, if you modify this software and distribute it, you must make your changes public too, so that everyone can benefit from your work--just as you're doing with mine. 
+This software is licensed under a GPL V3 license. Please read the accompanying LICENSE.txt file for more details, but basically, if you modify this software and distribute it, you must make your changes public too, so that everyone can benefit from your work--just as you're doing with mine.
 
 You can also make your changes public even if you don't plan on redistributing this application, okay? Sharing is good! :-)
 
 
-## Change log ##
+Change log
+----------
 
 2012 09 25 - **r5**
 
@@ -161,7 +189,7 @@ Many interesting bug fixes and new features thanks to the work of Norman Rasmuss
 * Add BusyBox support (by [sammael](http://github.com/sammael)). Fixes #11.
 * Handle device drops when there's no row present (by [normanr](http://github.com/normanr)). Fixes #9.
 * Handle symlinks on the device correctly (by [normanr](http://github.com/normanr)). Fixes #12.
-* Quote/Unquote special characters in drag&drop messages (by [normanr](http://github.com/normanr)). Fixes #10. 
+* Quote/Unquote special characters in drag&drop messages (by [normanr](http://github.com/normanr)). Fixes #10.
 * Slightly improve the README. Clarify how to find out the device Id, add link to PyGTK binary for Mac users.
 * Move the TO DO list items that were on this README file over to the issue tracker in the project's page.
 
@@ -182,7 +210,8 @@ Many interesting bug fixes and new features thanks to the work of Norman Rasmuss
 * First initial release; basic functionality is here!
 
 
-## Attributions ##
+Attributions
+------------
 
 - Written by [Sole](http://soledadpenades.com)
 - Nice usability ideas from [Mr.doob](http://mrdoob.com/)
@@ -190,7 +219,8 @@ Many interesting bug fixes and new features thanks to the work of Norman Rasmuss
 - XDS with PyGTK [tutorial](http://rodney.id.au/dev/gnome/an-xds-example)
 - Issues and patches from [Toby Collett](https://github.com/thjc), [Peter Sinnott](https://github.com/psinnott) and [Alexalex89](https://github.com/Alexalex89).
 
-## Hacking ##
+Hacking
+-------
 
 I'm by no means a GTK/Python/ADB/Android expert. I'm just learning so this project will surely contain many things that can be improved or that are plain wrong, so feel free to clone the repository and submit pull requests :-)
 
@@ -210,9 +240,9 @@ This was initially developed in an Ubuntu Linux 10.10 system. I thought it would
 - Windows (!!!)
 
 
-## TO DO ##
+TO DO
+-----
 
 I'm now using Github's issue tracker to keep track of issues, bugs and wished-for features.
 
 If you'd like to have a certain feature or think you've found a bug that is not in the list, please add it to the issue tracker at https://github.com/sole/aafm/issues
-
