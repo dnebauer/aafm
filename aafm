@@ -1,53 +1,27 @@
-#!/bin/sh
+#!/usr/bin/env python
 
-executable=""
-site_path=""
+import itertools
+import os
+import site
+import sys
 
-#Check the correct name for python2 interpreter, assume no one uses in distro with python
-#version lower than 2.5.0
+# Get site package locations
+site_packages = site.getsitepackages()
+if len(site_packages) == 0:
+    sys.exit('No site package locations found')
 
-which python > /dev/null 2>&1
-if [ "$?" == "0" ]; then
-	version=$(python -c 'import sys; print(sys.version[:1])')
-	if [ "$version" = "2" ]; then
-		executable=python
-	fi
-fi
+# Look for aafm script in package locations
+possible_scripts = [x + '/aafm/aafm-gui.py' for x in site_packages]
+scripts = [x for x in possible_scripts if os.path.isfile(x)]
+if len(scripts) == 0:
+    sys.exit("Did not find aafm in site package locations: "
+             + ", ".join(site_packages))
+if len(scripts) > 1:
+    print("Located multiple aafm site packages in "
+          + " and ".join(site_packages)
+          + "; using the package in "
+          + site_packages[0])
 
-which python2 > /dev/null 2>&1
-if [ "$?" = "0" ]; then
-	executable=python2
-fi
-
-which python2.5 > /dev/null 2>&1
-if [ "$?" = "0" ]; then
-	executable=python2.5
-fi
-
-which python2.6 > /dev/null 2>&1
-if [ "$?" = "0" ]; then
-	executable=python2.6
-fi
-
-which python2.7 > /dev/null 2>&1
-if [ "$?" = "0" ]; then
-	executable=python2.7
-
-else
-	if [ "$executable" = "" ]; then
-		echo "Could not find the python executable to run the application with."
-		echo "Please enter the python 2 interpreter executable's name or press enter to exit"
-		read executable
-		if [ "$executable" = "" ]; then
-			echo "Please install a python2 interpreter and try again. Exiting!"
-			exit 1
-		fi
-	fi
-fi
-
-#Assume we have actually installed aafm to the site-packages dir....
-site_path="$($executable -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")"
-
-#Launch Aafm from site-packages path and pass any arguments given
-$executable "${site_path}/aafm/aafm-gui.py" "$@"
-
+# Launch aafm from site-packages path and pass any arguments given
+cmd = list(itertools.chain([sys.executable, scripts[0]], sys.argv[1:]))
+os.system(" ".join(cmd))
